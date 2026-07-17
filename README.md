@@ -20,6 +20,32 @@
 *   **前端**: HTML, CSS, JavaScript
 *   **API**: 支持任何兼容OpenAI API格式的对话模型接口
 
+## Logo CSS 特色
+
+“越山对话ai”的 Logo (位于页面左上角) 经过精心设计，融合了多种 CSS 特性，旨在提供动态且引人注目的视觉效果。其主要特色包括：
+
+1.  **圆形设计与内容适应**：
+    *   `border-radius: 50%;` 确保 Logo 图像呈现完美的圆形。
+    *   `object-fit: cover;` 保证图像内容在圆形容器内完整且按比例填充，避免变形。
+
+2.  **渐变边框效果**：
+    *   通过 `padding: 2px;` 为图像创建了一个内部边距，并结合 `background: var(--logo-gradient);`，利用预定义的 `linear-gradient` 渐变色（从 `#4285f4` 蓝色到 `#9b72cb` 紫色再到 `#d96570` 红色）作为背景，巧妙地模拟出多彩的渐变边框效果。
+
+3.  **呼吸灯阴影动画 (`logo-glow`)**：
+    *   `animation: logo-glow 3s infinite alternate;` 应用了一个名为 `logo-glow` 的动画，持续 3 秒，无限循环，并交替播放（从起点到终点再返回起点）。
+    *   `@keyframes logo-glow` 定义了动画的关键帧：
+        *   `0%` 时，Logo 具有一个柔和的蓝色阴影 (`box-shadow: 0 0 5px rgba(66, 133, 244, 0.4);`)。
+        *   `100%` 时，阴影变为更明显、带有红色/紫色调的效果 (`box-shadow: 0 0 15px rgba(217, 101, 112, 0.7);`)。
+    *   这种动画效果使得 Logo 仿佛在“呼吸”，增加了页面的活力和科技感。
+
+4.  **交互式悬停效果 (`:hover`)**：
+    *   `transition: transform 0.3s ease, box-shadow 0.3s ease;` 为 `transform` 和 `box-shadow` 属性的改变设置了平滑的过渡效果，时长 0.3 秒，使交互更加自然。
+    *   当鼠标悬停在 Logo 上时 (`.brand img:hover`)：
+        *   `transform: rotate(10deg) scale(1.1);` 使 Logo 顺时针旋转 10 度并放大 1.1 倍，提供视觉反馈。
+        *   `box-shadow: 0 0 20px rgba(155, 114, 203, 0.6);` 增强了阴影效果，使其更加突出，颜色也偏向紫色调。
+
+这些 CSS 特性共同作用，使得“越山对话ai”的 Logo 不仅具有美观的静态外观，更通过动态的动画和交互效果，提升了用户体验和品牌识别度。
+
 ## 安装与部署
 
 1.  **下载项目**: 将项目文件下载到您的Web服务器（如Apache, Nginx）的Web根目录。

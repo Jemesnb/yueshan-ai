@@ -1,16 +1,9 @@
 <?php
 /**
  * 越山对话ai - 模型管理后台
- * 文件名: kjzz025247.php
  */
 
-$models_file = 'models.json';
-
-// 加载现有模型
-if (!file_exists($models_file)) {
-    file_put_contents($models_file, json_encode([]));
-}
-$models = json_decode(file_get_contents($models_file), true);
+require_once 'includes/config.php';
 
 $message = "";
 
@@ -74,7 +67,7 @@ if (isset($_GET['edit'])) {
 <body>
     <div class="container">
         <div class="nav"><a href="index.php">← 返回对话页</a></div>
-        <h1>越山 AI 模型管理后台</h1>
+        <h1>越山对话ai 模型管理后台</h1>
         
         <?php if ($message): ?><div class="msg"><?php echo $message; ?></div><?php endif; ?>
 

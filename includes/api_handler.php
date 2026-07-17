@@ -1,0 +1,41 @@
+<?php
+/**
+ * 越山对话ai - API 处理逻辑
+ */
+
+function call_ai_api($selected_model, $history) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $selected_model['api_url']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    
+    $messages = array_merge([['role' => 'system', 'content' => 'You are a helpful assistant.']], $history);
+    
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+        'model' => $selected_model['model_id'],
+        'messages' => $messages,
+        'stream' => false
+    ]));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Authorization: Bearer ' . trim($selected_model['api_key'])
+    ]);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    
+    $response = curl_exec($ch);
+    $err = curl_error($ch);
+    curl_close($ch);
+    
+    if ($err) {
+        return ['error' => "网络连接失败: " . $err];
+    }
+    
+    $res_data = json_decode($response, true);
+    if (isset($res_data['choices'][0]['message']['content'])) {
+        return ['content' => $res_data['choices'][0]['message']['content']];
+    } else {
+        return ['error' => "接口错误: " . ($res_data['error']['message'] ?? "未知错误")];
+    }
+}
