@@ -20,8 +20,9 @@ function call_ai_api($selected_model, $history) {
         'Content-Type: application/json',
         'Authorization: Bearer ' . trim($selected_model['api_key'])
     ]);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    // 生产环境必须开启 SSL 校验以防止中间人攻击
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     
     $response = curl_exec($ch);

@@ -1,0 +1,4 @@
+.env
+models.json
+vendor/
+.DS_Store

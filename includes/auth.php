@@ -5,7 +5,7 @@
 
 session_start();
 
-$admin_pass = "[REDACTED]"; // 默认密码，建议用户修改
+$admin_pass = getenv('ADMIN_PASSWORD') ?: "[REDACTED]"; // 优先从环境变量读取，默认为 [REDACTED]
 
 // 处理注销
 if (isset($_GET['logout'])) {
