@@ -1,0 +1,60 @@
+<?php
+/**
+ * 越山对话ai - 统一身份验证
+ */
+
+session_start();
+
+$admin_pass = "[REDACTED]"; // 默认密码，建议用户修改
+
+// 处理注销
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit;
+}
+
+// 检查登录状态
+if (!isset($_SESSION['logged_in'])) {
+    if (isset($_POST['login_pass'])) {
+        if ($_POST['login_pass'] === $admin_pass) {
+            $_SESSION['logged_in'] = true;
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            $login_error = "密码错误！";
+        }
+    }
+    ?>
+    <!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>身份验证 - 越山对话ai</title>
+        <style>
+            body { font-family: -apple-system, sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+            .login-box { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 320px; text-align: center; }
+            h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
+            input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+            button { width: 100%; padding: 12px; background: #1a73e8; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; }
+            .error { color: #dc3545; font-size: 0.9rem; margin-bottom: 10px; }
+            p { font-size: 0.8rem; color: #999; margin-top: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="login-box">
+            <img src="https://mountainai.nekoweb.org/IMG_1282.jpeg" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 15px;">
+            <h2>越山对话ai</h2>
+            <?php if (isset($login_error)): ?><div class="error"><?php echo $login_error; ?></div><?php endif; ?>
+            <form method="POST">
+                <input type="password" name="login_pass" placeholder="请输入访问密码" required autofocus>
+                <button type="submit">进入系统</button>
+            </form>
+            <p>由 mountain 开发</p>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit;
+}

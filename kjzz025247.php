@@ -3,81 +3,40 @@
  * 越山对话ai - 模型管理后台
  */
 
+require_once 'includes/auth.php';
 require_once 'includes/config.php';
-
-session_start();
-
-// 简单的登录验证
-$admin_pass = "[REDACTED]"; // 默认密码，建议用户修改
-
-if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: kjzz025247.php");
-    exit;
-}
-
-if (!isset($_SESSION['logged_in'])) {
-    if (isset($_POST['login_pass'])) {
-        if ($_POST['login_pass'] === $admin_pass) {
-            $_SESSION['logged_in'] = true;
-            header("Location: kjzz025247.php");
-            exit;
-        } else {
-            $login_error = "密码错误！";
-        }
-    }
-    ?>
-    <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>登录 - 越山对话ai 管理后台</title>
-        <style>
-            body { font-family: -apple-system, sans-serif; background: #f0f2f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-            .login-box { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
-            h2 { margin-bottom: 20px; font-size: 1.2rem; color: #333; }
-            input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-            button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-            .error { color: #dc3545; font-size: 0.8rem; margin-bottom: 10px; }
-        </style>
-    </head>
-    <body>
-        <div class="login-box">
-            <h2>管理后台登录</h2>
-            <?php if (isset($login_error)): ?><div class="error"><?php echo $login_error; ?></div><?php endif; ?>
-            <form method="POST">
-                <input type="password" name="login_pass" placeholder="请输入管理密码" required>
-                <button type="submit">登录</button>
-            </form>
-            <p style="font-size: 0.7rem; color: #999; margin-top: 15px;">由 mountain 开发</p>
-        </div>
-    </body>
-    </html>
-    <?php
-    exit;
-}
 
 $message = "";
 
 // 处理添加或修改
 if (isset($_POST['action'])) {
     if ($_POST['action'] === 'save') {
+        $index = $_POST['edit_index'] ?? '';
+        $new_key = $_POST['api_key'];
+        
+        // 如果输入的是脱敏后的星号且是编辑模式，则保留原密钥
+        if ($index !== '' && $new_key === '********') {
+            $new_key = $models[$index]['api_key'];
+        }
+
         $new_model = [
             'display_name' => $_POST['display_name'],
             'model_id' => $_POST['model_id'],
             'api_url' => $_POST['api_url'],
-            'api_key' => $_POST['api_key']
+            'api_key' => $new_key
         ];
         
-        if (isset($_POST['edit_index']) && $_POST['edit_index'] !== '') {
-            $models[$_POST['edit_index']] = $new_model;
+        if ($index !== '') {
+            $models[$index] = $new_model;
             $message = "模型已更新！";
         } else {
             $models[] = $new_model;
             $message = "新模型已添加！";
         }
         file_put_contents($models_file, json_encode(array_values($models), JSON_PRETTY_PRINT));
+        
+        // 刷新模型列表
+        $models = json_decode(file_get_contents($models_file), true);
     } elseif ($_POST['action'] === 'delete') {
         $index = intval($_POST['index']);
         array_splice($models, $index, 1);
@@ -113,13 +72,13 @@ if (isset($_GET['edit'])) {
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.85rem; }
         th { background: #f8f9fa; }
         .msg { padding: 10px; background: #d4edda; color: #155724; border-radius: 5px; margin-bottom: 20px; }
-        .nav { margin-bottom: 20px; font-size: 0.9rem; }
+        .nav { margin-bottom: 20px; font-size: 0.9rem; display: flex; justify-content: space-between; }
         .nav a { color: #007bff; text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="nav" style="display: flex; justify-content: space-between;">
+        <div class="nav">
             <a href="index.php">← 返回对话页</a>
             <a href="?logout=1" style="color: #dc3545;">退出登录</a>
         </div>
@@ -146,8 +105,8 @@ if (isset($_GET['edit'])) {
                 <input type="text" name="api_url" value="<?php echo $edit_data['api_url'] ?? ''; ?>" required>
             </div>
             <div class="form-group">
-                <label>API 密钥 (Key)</label>
-                <input type="password" name="api_key" value="<?php echo $edit_data['api_key'] ?? ''; ?>" required>
+                <label>API 密钥 (Key) <?php echo $edit_data ? '<span style="color: #999; font-weight: normal;">(已隐藏，输入新密钥以修改)</span>' : ''; ?></label>
+                <input type="text" name="api_key" value="<?php echo $edit_data ? '********' : ''; ?>" placeholder="请输入 API 密钥" required>
             </div>
             <button type="submit"><?php echo $edit_data ? '保存修改' : '添加模型'; ?></button>
             <?php if ($edit_data): ?> <a href="kjzz025247.php" style="font-size: 0.9rem; margin-left: 10px; color: #666;">取消编辑</a><?php endif; ?>
