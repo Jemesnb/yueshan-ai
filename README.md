@@ -36,6 +36,11 @@
 - **前端**: HTML, CSS, JavaScript
 - **API**: 支持任何兼容 OpenAI API 格式的接口
 
+## 开发者与鸣谢
+
+- 本项目由 **mountain** 开发。
+- 特别感谢 **dengjiewei** 提供的深度安全审计与专业改进建议，协助项目完成了从教学示例到生产级安全标准的加固。
+
 ## 许可证
 
 本项目采用 [MIT License](LICENSE) 开源。
